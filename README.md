@@ -38,8 +38,15 @@
 
 - strcat()连接两个字符串, sprintf()也可以, strtok(str,"\n") 移除从文件读出来的\n,替换为\0
 
+# dev 环境搭建
+
+利用之前 15213 的 docker镜像,配合 clion 的 tool chain + makelist.txt 代码提示
+
 # 测试方式
 
+- 编译后自测
+- 执行 init_test (提供了些许用例)
+- 自己写 unit test
 
 
 # 实现 status
