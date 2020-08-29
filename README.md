@@ -1,7 +1,7 @@
 
 # todo
 - [x] test method
-- [ ] status
+- [x] status
 - [ ] rm
 - [ ] commit_id impl
 - [ ] commit
