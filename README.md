@@ -9,6 +9,13 @@
 - [ ] branch
 - [ ] checkout
 
+# 收获
+
+- 实践了使用进制转换生成不重复 id 的思想, (cs61c integer representation 和玩转数据结构的哈希表一章)
+- 了解到branch 的设计原来那么简洁
+- 重点,c 语言的熟悉
+- 大量的基础文件流和字符串(字节数组)操作经验
+
 # guide reading 
 
 `beargit-project spec.pdf`
