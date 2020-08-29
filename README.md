@@ -1,7 +1,19 @@
 
-# guide reading
+# todo
+- [ ] test method
+- [ ] status
+- [ ] rm
+- [ ] commit_id impl
+- [ ] commit
+- [ ] log
+- [ ] branch
+- [ ] checkout
 
-> 实际上是一个snapshot工具 (全量快照版本的 git)
+# guide reading 
+
+`beargit-project spec.pdf`
+
+实际上是一个snapshot工具 (全量快照版本的 git)
 
 - `{.beargit}` 根目录
    - `.index` 存放当前repo所有已跟踪的文件
@@ -25,6 +37,9 @@
 - 要求自己想case 写测试 (Testing your code in CS61C)
 
 - strcat()连接两个字符串, sprintf()也可以, strtok(str,"\n") 移除从文件读出来的\n,替换为\0
+
+# 测试方式
+
 
 
 # 实现 status
