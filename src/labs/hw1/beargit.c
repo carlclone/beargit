@@ -96,6 +96,29 @@ int beargit_add(const char* filename) {
 
 int beargit_rm(const char* filename) {
   /* COMPLETE THE REST */
+  //遍历文件并写入新文件,写完后删除原文件并重命名新文件 (fs_mv() 会直接替换)
+    FILE *oldFd = fopen(".beargit/.index","r");
+    FILE *newFd = fopen(".beargit/.newindex","r");
+
+    char fileName[FILENAME_SIZE];
+    int deleted = 0;
+
+    while (fgets(fileName, sizeof(fileName), oldFd)) {
+        strtok(fileName, "\n");
+        if (strcmp(fileName, filename) == 0) {
+            deleted=1;
+            continue;
+        }
+        fprintf(newFd, "%s\n", fileName);
+    }
+    fclose(oldFd);
+    fclose(newFd);
+    fs_mv(".beargit/.newindex",".beargit/.index");
+    if (deleted) {
+        fprintf(stdout,"ERROR: File %s not tracked",filename);
+        return 1;
+    }
+    return 0;
 
   return 0;
 }
@@ -169,6 +192,14 @@ int beargit_status() {
 
   //输出"<N> files total"
   fprintf(stdout,"%d %s\n\n",fileNums,"files total");
+
+  //忘记关闭文件了..百密总有一疏 , 墨菲定律..
+  // 肉眼检查,伪代码都不可靠,测试也可能测不出来...
+  // 想齐全 case 多自测吧 ,
+  // 做 lab 的时候都是靠的 test 套件齐全,做算法题也是
+  // 想起那个数学 类比拼图的说法 ,
+  // 没人会从中间开始拼,都是从外到里一点一点积累,积累的足够多了就能接触到更里层的拼块了
+  fclose(fd);
   return 0;
 }
 

@@ -2,7 +2,7 @@
 # todo
 - [x] test method
 - [x] status
-- [ ] rm
+- [x] rm
 - [ ] commit_id impl
 - [ ] commit
 - [ ] log
@@ -12,9 +12,17 @@
 # 收获
 
 - 实践了使用进制转换生成不重复 id 的思想, (cs61c integer representation 和玩转数据结构的哈希表一章)
-- 了解到branch 的设计原来那么简洁
+- 了解到branch 的简洁设计
 - 重点,c 语言的熟悉
 - 大量的基础文件流和字符串(字节数组)操作经验
+- 掌握 cgdb 调试使用
+
+# 资料
+
+[cs61c sp15](https://inst.eecs.berkeley.edu//~cs61c/sp15/)
+[hw1 beargit basis](https://inst.eecs.berkeley.edu//~cs61c/sp15/hw/01/hw1.html)
+[hw2 beargit branch/checkout](https://inst.eecs.berkeley.edu//~cs61c/sp15/hw/02/hw2.html)
+[lab1 c and gdb](https://inst.eecs.berkeley.edu/~cs61c/sp15/labs/01/)
 
 # guide reading 
 
@@ -54,6 +62,12 @@
 - 编译后自测
 - 执行 init_test (提供了些许用例)
 - 自己写 unit test
+
+# 调试学习
+
+cgdb , cs61c lab1
+
+
 
 
 # 实现 status
