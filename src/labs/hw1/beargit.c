@@ -141,6 +141,34 @@ int beargit_commit(const char* msg) {
 int beargit_status() {
   /* COMPLETE THE REST */
 
+  //输出到标准输出流 :"Tracked files:"
+  fprintf(stdout,"%s\n\n","Tracked files:");
+
+
+  //读取.beargit 目录的.index , 一行一行输出文件名 , 并保持文件计数
+  int fileNums=0;
+  //打开文件,得到文件descriptor(在进程的文件描述符表创建一条文件名->inode(文件位置?)的 kv 映射)
+  FILE* fd=fopen(".beargit/.index","r");
+  //循环读取文件直到结束
+  char fileName[FILENAME_SIZE];
+    //fgets 每次读取数据流中的一行,
+    // 当读取 (n-1) 个字符时，或者读取到换行符时，或者到达文件末尾时，它会停止
+    //https://baike.baidu.com/item/fgets
+    //如果文件中的该行，不足n-1个字符，则读完该行就结束。如若该行（包括最后一个换行符）的字符数超过n-1，则fgets只返回一个不完整的行，但是，缓冲区总是以NULL字符结尾，对fgets的下一次调用会继续读该行。函数成功将返回stream，失败或读到文件结尾返回NULL。因此不能直接通过fgets的返回值来判断函数是否是出错而终止的，应该借助feof函数或者ferror函数来判断。
+    //返回值
+    //如果成功，该函数返回相同的 str 参数。如果到达文件末尾或者没有读取到任何字符，str 的内容保持不变，并返回一个空指针。如果发生错误，返回一个空指针。
+    //在读字符时遇到end-of-file，则eof指示器被设置，如果还没读入任何字符就遇到这种情况，则stream保持原来的内容，返回NULL；
+    //如果发生读入错误，error指示器被设置，返回NULL，stream的值可能被改变。
+    //char *fgets(char *str, int n, FILE *stream);
+  while (fgets(fileName,sizeof(fileName),fd)) {
+      strtok(fileName,"\n"); //去除读取到的"\n"
+      fprintf(stdout,"%s",fileName);
+      fileNums++;
+  }
+
+
+  //输出"<N> files total"
+  fprintf(stdout,"%d %s\n\n",fileNums,"files total");
   return 0;
 }
 

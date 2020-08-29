@@ -1,6 +1,6 @@
 
 # todo
-- [ ] test method
+- [x] test method
 - [ ] status
 - [ ] rm
 - [ ] commit_id impl
