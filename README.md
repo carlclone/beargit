@@ -3,8 +3,9 @@
 - [x] test method
 - [x] status
 - [x] rm
-- [ ] commit_id impl
 - [ ] commit
+    - [ ] is_commit_msg_ok
+    - [ ] commit_id impl
 - [ ] log
 - [ ] branch
 - [ ] checkout

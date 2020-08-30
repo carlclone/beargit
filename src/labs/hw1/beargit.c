@@ -133,6 +133,10 @@ const char* go_bears = "GO BEARS!";
 
 int is_commit_msg_ok(const char* msg) {
   /* COMPLETE THE REST */
+  //包含"GO BEARS!"子串 , 两个字符串指针 p1,p2 移动
+
+
+
   return 0;
 }
 
