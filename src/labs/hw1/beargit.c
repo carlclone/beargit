@@ -134,15 +134,86 @@ const char* go_bears = "GO BEARS!";
 int is_commit_msg_ok(const char* msg) {
   /* COMPLETE THE REST */
   //包含"GO BEARS!"子串 , 两个字符串指针 p1,p2 移动
+  char gb[] = "GO BEARS!";
+  int p1=0;
+  int matchP1 = strlen(gb);
+  while (*msg!="\0") {
+    if (*msg == gb[p1]) {
+      if (p1==matchP1) {
+        return 1;
+      }
+      p1++;
 
-
-
+    } else if (p1!=0)
+    {
+      p1=0;
+    }
+  
+    msg++;
+  }
   return 0;
 }
 
+const char* digits="61c";
+
 void next_commit_id(char* commit_id) {
   /* COMPLETE THE REST */
+  
+  char currentBranch[BRANCHNAME_SIZE];
+  read_string_from_file(".beargit/.current_branch",currentBranch,BRANCHNAME_SIZE);
+
+  //6 1 c 的三进制转换
+  //0 1 2 映射
+  //只填了前10个 , branch相关
+  int n = get_branch_number(currentBranch);
+  for (int i=0;i<COMMIT_ID_BRANCH_BYTES;i++) {
+    // n%3 , 得到第i位的值
+    commit_id[i] = digits[n%3];
+    // n/=3 , 左移,去掉第i位
+    n/=3;
+  }
+
+  //填剩余的30个
+  next_commit_id_part1(commit_id+COMMIT_ID_BRANCH_BYTES);
+
+  
+
 }
+
+void next_commit_id_part1(char* commit_id) {
+  /* COMPLETE THE REST */
+  //todo;这是在干嘛 , 就不能也用进制的写法
+  char* new_id = commit_id;
+  //当指针没有到尾部
+  while (*new_id != '\0') {
+    //如果是0 , 都填上6 , 然后下一次循环 00000000 -> 6666666666
+    if (*new_id == '0') {
+      *new_id = '6';
+      new_id++;
+      continue;
+      // 6 1 c
+      // 0 1 2
+      //如果是6了,加一,变成1
+    } else if (*new_id == '6') {
+      *new_id = '1';
+      break;
+      //如果是1了,加一,变成c
+    } else if (*new_id == '1') {
+      *new_id = 'c';
+      break;
+      //如果是c了,进位,原位变为6
+    } else if (*new_id == 'c') {
+      *new_id = '6';
+      new_id++;
+      //似乎和第一个if一样
+    } else {
+      *new_id = '6';
+      new_id++;
+    }
+  }
+}
+
+
 
 int beargit_commit(const char* msg) {
   if (!is_commit_msg_ok(msg)) {
@@ -155,6 +226,21 @@ int beargit_commit(const char* msg) {
   next_commit_id(commit_id);
 
   /* COMPLETE THE REST */
+  //创建本次commit的目录
+  char *filename=malloc(strlen(".beargit/") + strlen(commit_id)+1);
+  sprintf(filename,"%s/%s",".beargit",commit_id);
+  fs_mkdir(filename);
+  //创建本次的.index文件
+  
+  
+  
+
+  //拷贝所有本次.index里的一份文件
+
+  //创建并写入.msg
+
+  //结束
+
 
   return 0;
 }
