@@ -315,5 +315,32 @@ int beargit_status() {
 int beargit_log() {
   /* COMPLETE THE REST */
 
+  //从根目录的 .prev记录的commit_id开始 , 直到commit_id==0000000000000000000 , 或者达到上限
+  //计数
+  int counter=INT_MAX;
+  
+  char *prev = malloc(COMMIT_ID_BYTES);
+  read_string_from_file(".beargit/.prev",prev,COMMIT_ID_SIZE);
+  if (strcmp("0000000000000000000000000000000000000000",prev)==0) {
+    fprintf(stderr,"ERROR: There are no commits!\n");
+    return 1;
+  }
+  while (counter>0) {
+    if (strcmp("0000000000000000000000000000000000000000"),prev)==0) {
+      break;
+    }
+
+    //遍历所有commit目录的.msg , 全是字符串,malloc和文件操作...封装一下啊
+    char *prev_message = malloc(MSG_SIZE + 1);
+    char *prev_dir = malloc(strlen(".beargit/") + strlen(prev_commit_id) + strlen("/.msg") + 1);
+    sprintf(prev_dir, "%s/%s/%s", ".beargit", prev_commit_id, ".msg");
+    read_string_from_file(prev_dir, prev_message, MSG_SIZE);
+    fprintf(stdout, "    %s\n", prev_message);
+    char *prev_directory = malloc(strlen(".beargit/") + strlen(prev_commit_id) + strlen("/.prev") + 1);
+    sprintf(prev_directory, "%s/%s/%s", ".beargit", prev_commit_id, ".prev");
+    read_string_from_file(prev_directory, prev_commit_id, COMMIT_ID_SIZE);
+    counter--;
+  }
+  fprintf(stdout,"\n");
   return 0;
 }

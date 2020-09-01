@@ -6,7 +6,7 @@
 - [x] commit
     - [x] is_commit_msg_ok
     - [x] commit_id impl
-- [ ] log
+- [x] log
 - [ ] branch
 - [ ] checkout
 
