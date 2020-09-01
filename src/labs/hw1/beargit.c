@@ -401,8 +401,39 @@ if (strlen(current_branch)) {
     return checkout_commit(arg);
   }
 
-//todo;
+  //todo;
+  const char *branch_name = arg;
+
+  int branch_exists = (get_branch_number(branch_name)>=0);
+
+  if (branch_exists && new_branch) {
+    fprintf(stderr, "ERROR: A branch named %s already exists\n", branch_name);
+    return 1;
+  }
+
+  if (!branch_exists && !new_branch) {
+ fprintf(stderr, "ERROR: No branch %s exists\n", branch_name);
+    return 1;
+  }
 
 
+  char branch_file[FILENAME_SIZE] = ".beargit/.branch_"; 
+  strcat(branch_file, branch_name);
 
+  // 新分支 , 创建相关文件
+  if (new_branch) {
+    FILE* fbranches = fopen(".beargit/.branches", "a");
+    fprintf(fbranches, "%s\n", branch_name);
+    fclose(fbranches);
+    fs_cp(".beargit/.prev", branch_file); 
+  }
+
+  write_string_to_file(".beargit/.current_branch", branch_name);
+
+  // Read the head commit ID of this branch.
+  char branch_head_commit_id[COMMIT_ID_SIZE];
+  read_string_from_file(branch_file, branch_head_commit_id, COMMIT_ID_SIZE);
+
+
+  return checkout_commit(branch_head_commit_id);
 }
