@@ -231,17 +231,30 @@ int beargit_commit(const char* msg) {
   sprintf(filename,"%s/%s",".beargit",commit_id);
   fs_mkdir(filename);
   //创建本次的.index文件
+  char *index=malloc(strelen(filename)+strlen("/.index")+1);
+  sprintf(index,"%s/%s",filename,"/.index");
+  //拷贝.prev
+  fs_cp(".beargit/.prev",prev);
   
-  
-  
-
   //拷贝所有本次.index里的一份文件
+  FILE *filelist=fopen(".beargit/.index","r");
+  char file[FILENAME_SIZE];
+  while (fgets(file,sizeof(file),filelist)) {
+    strtok(file,"\n");
+    char *new_file=malloc(strlen(filename)+strlen(file)+1);
+    sprintf(new_file,"%s/%s",filename,file);
+    fs_cp(file,new_file);
+  }
+  
 
   //创建并写入.msg
+char *commit_msg = malloc(strlen(filename)+strlen("/.msg")+1);
+sprintf(commit_msg,"%s%s","/.msg");
+write_string_to_file(commit_msg,msg);
+write_string_to_file(".beargit/.prev",commit_id);
+fclose(filelist);
 
   //结束
-
-
   return 0;
 }
 
