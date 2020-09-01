@@ -366,3 +366,43 @@ int beargit_branch() {
   return 0;
 }
 
+int beargit_checkout(const char *arg,int new_branch) {
+  /*
+  - checkout的是commit_id
+  - checkout的是branch
+  - checkout新分支
+  */
+
+//获取当前分支名
+ char current_branch[BRANCHNAME_SIZE];
+  read_string_from_file(".beargit/.current_branch", current_branch, BRANCHNAME_SIZE);
+
+//如果当前分支名长度不为0 (意味着不是detached的) , 那把当前的.prev拷贝到当前分支的目录里  (之后切回来的时候用到)
+
+if (strlen(current_branch)) {
+    char current_branch_file[BRANCHNAME_SIZE + 100];
+    sprintf(current_branch_file, ".beargit/.branch_%s", current_branch);
+    fs_cp(".beargit/.prev", current_branch_file);
+  }
+
+//如果是commit_id (detached的) , 检查commit_id目录是否存在 , 把current_branch设为none
+  if (is_it_a_commit_id(arg)) {
+    char commit_dir[FILENAME_SIZE + 100] = ".beargit/";
+    strcat(commit_dir, arg);
+    if (!fs_check_dir_exists(commit_dir)) {
+      fprintf(stderr, "ERROR: Commit %s does not exist\n", arg);
+      return 1;
+    }
+
+    // Set the current branch to none (i.e., detached).
+    write_string_to_file(".beargit/.current_branch", "");
+
+    
+    return checkout_commit(arg);
+  }
+
+//todo;
+
+
+
+}
