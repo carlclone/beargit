@@ -344,3 +344,25 @@ int beargit_log() {
   fprintf(stdout,"\n");
   return 0;
 }
+
+int beargit_branch() {
+  /* COMPLETE THE REST */
+
+  //打印所有branch名字
+  FILE* branches = fopen(".beargit/.branches", "r");
+  char branch_name[BRANCHNAME_SIZE];
+  char *current_branch = malloc(BRANCHNAME_SIZE + 1);
+  read_string_from_file(".beargit/.current_branch", current_branch, BRANCHNAME_SIZE);
+  while (fgets(branch_name, sizeof(branch_name), branches)) {
+    strtok(branch_name, "\n");
+    if (strcmp(current_branch, branch_name) == 0) {
+      fprintf(stdout, "* ");
+    } else {
+      fprintf(stdout, "  ");
+    }
+    fprintf(stdout, "%s\n", branch_name);
+  }
+  fclose(branches);
+  return 0;
+}
+

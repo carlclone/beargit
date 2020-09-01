@@ -7,7 +7,7 @@
     - [x] is_commit_msg_ok
     - [x] commit_id impl
 - [x] log
-- [ ] branch
+- [x] branch
 - [ ] checkout
 
 # 收获
