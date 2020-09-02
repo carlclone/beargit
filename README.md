@@ -1,6 +1,9 @@
 
+发现ucore的许多前置条件都不具备 , 用cs61c的hw补足c , c调试(gdb) , c开发环境 , c的ide
+
 # todo
 - [x] test method
+- [ ] gdb/cgdb
 - [x] status
 - [x] rm
 - [x] commit
@@ -8,7 +11,7 @@
     - [x] commit_id impl
 - [x] log
 - [x] branch
-- [ ] checkout
+- [x] checkout
 
 # 收获
 
