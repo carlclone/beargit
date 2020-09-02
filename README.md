@@ -68,6 +68,8 @@
 - 材料 [cs61a]()
 - 编译时需要gcc -g (-ggdb) 
 - gdb progname
+- refcard https://inst.eecs.berkeley.edu//~cs61c/resources/gdb5-refcard.pdf
+- php源码阅读视频课第x节
 
 
 
