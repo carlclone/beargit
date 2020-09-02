@@ -434,3 +434,41 @@ int beargit_checkout(const char *arg, int new_branch) {
 
     return checkout_commit(branch_head_commit_id);
 }
+
+int checkout_commit(const char *commit_id) {
+
+    index_fd = fopen(".beargit/.index", "r");
+    file_name = malloc(FILENAME_SIZE + 1);
+    while (fgets(file_name, sizeof(file_name), index_fd)) {
+        strtok(file_name, "\n");
+        fs_rm(file_name);
+    }
+    fclose(index_fd);
+    // 当commit_id为0000000...00000 , 删除所有当前tracked , 更新.index , 更新.prev
+    if (strcmp("0000000000000000000000000000000000000000", commit_id) == 0) {
+        write_string_to_file(".beargit/.index", "\0");
+    } else {
+        //为其他 , 删除当前tracked , cp新版本tracked files , 更新.index , 更新.prev
+        new_index_fd = fopen(".beargit/.index", "r");
+
+        new_file_name = malloc(FILENAME_SIZE + 1);
+        //cp .index
+        char *checked_index = malloc(strlen(strlen(".beargit/")) + strelen(commit_id) + strlen("/.index") + 1)
+        sprintf(checked_index, "%s/%s/%s", ".beargit", commit_id, ".index");
+        fs_cp(checked_index, ".beargit/.index");
+
+        FILE *check_index_fd = fopen(checked_index, "r");
+        char ch_index_names[FILENAME_SIZE];
+        while (fgets(ch_index_names, sizeof(ch_index_names), check_index_fd)) {
+            strtok(ch_index_names, "\n");
+            char *file = malloc(strlen(".beargit/") + strlen(commit_id) + strlen(ch_index_names) + 1);
+            sprintf(file, "%s/%s/%s", ".beargit", commit_id, ch_index_names);
+            fs_cp(file, ch_index_names);
+
+        }
+        fclose(check_index_fd);
+    }
+    write_string_to_file(".beargit/.prev", commit_id);
+    return 0;
+
+}
