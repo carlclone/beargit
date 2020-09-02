@@ -38,14 +38,14 @@
  */
 
 int beargit_init(void) {
-  fs_mkdir(".beargit");
+    fs_mkdir(".beargit");
 
-  FILE* findex = fopen(".beargit/.index", "w");
-  fclose(findex);
-  
-  write_string_to_file(".beargit/.prev", "0000000000000000000000000000000000000000");
+    FILE *findex = fopen(".beargit/.index", "w");
+    fclose(findex);
 
-  return 0;
+    write_string_to_file(".beargit/.prev", "0000000000000000000000000000000000000000");
+
+    return 0;
 }
 
 
@@ -60,31 +60,31 @@ int beargit_init(void) {
  * - None if successful
  */
 
-int beargit_add(const char* filename) {
-  FILE* findex = fopen(".beargit/.index", "r");
-  FILE *fnewindex = fopen(".beargit/.newindex", "w");
+int beargit_add(const char *filename) {
+    FILE *findex = fopen(".beargit/.index", "r");
+    FILE *fnewindex = fopen(".beargit/.newindex", "w");
 
-  char line[FILENAME_SIZE];
-  while(fgets(line, sizeof(line), findex)) {
-    strtok(line, "\n");
-    if (strcmp(line, filename) == 0) {
-      fprintf(stderr, "ERROR: File %s already added\n", filename);
-      fclose(findex);
-      fclose(fnewindex);
-      fs_rm(".beargit/.newindex");
-      return 3;
+    char line[FILENAME_SIZE];
+    while (fgets(line, sizeof(line), findex)) {
+        strtok(line, "\n");
+        if (strcmp(line, filename) == 0) {
+            fprintf(stderr, "ERROR: File %s already added\n", filename);
+            fclose(findex);
+            fclose(fnewindex);
+            fs_rm(".beargit/.newindex");
+            return 3;
+        }
+
+        fprintf(fnewindex, "%s\n", line);
     }
 
-    fprintf(fnewindex, "%s\n", line);
-  }
+    fprintf(fnewindex, "%s\n", filename);
+    fclose(findex);
+    fclose(fnewindex);
 
-  fprintf(fnewindex, "%s\n", filename);
-  fclose(findex);
-  fclose(fnewindex);
+    fs_mv(".beargit/.newindex", ".beargit/.index");
 
-  fs_mv(".beargit/.newindex", ".beargit/.index");
-
-  return 0;
+    return 0;
 }
 
 
@@ -94,11 +94,11 @@ int beargit_add(const char* filename) {
  *
  */
 
-int beargit_rm(const char* filename) {
-  /* COMPLETE THE REST */
-  //遍历文件并写入新文件,写完后删除原文件并重命名新文件 (fs_mv() 会直接替换)
-    FILE *oldFd = fopen(".beargit/.index","r");
-    FILE *newFd = fopen(".beargit/.newindex","r");
+int beargit_rm(const char *filename) {
+    /* COMPLETE THE REST */
+    //遍历文件并写入新文件,写完后删除原文件并重命名新文件 (fs_mv() 会直接替换)
+    FILE *oldFd = fopen(".beargit/.index", "r");
+    FILE *newFd = fopen(".beargit/.newindex", "r");
 
     char fileName[FILENAME_SIZE];
     int deleted = 0;
@@ -106,21 +106,21 @@ int beargit_rm(const char* filename) {
     while (fgets(fileName, sizeof(fileName), oldFd)) {
         strtok(fileName, "\n");
         if (strcmp(fileName, filename) == 0) {
-            deleted=1;
+            deleted = 1;
             continue;
         }
         fprintf(newFd, "%s\n", fileName);
     }
     fclose(oldFd);
     fclose(newFd);
-    fs_mv(".beargit/.newindex",".beargit/.index");
+    fs_mv(".beargit/.newindex", ".beargit/.index");
     if (deleted) {
-        fprintf(stdout,"ERROR: File %s not tracked",filename);
+        fprintf(stdout, "ERROR: File %s not tracked", filename);
         return 1;
     }
     return 0;
 
-  return 0;
+    return 0;
 }
 
 /* beargit commit -m <msg>
@@ -129,133 +129,130 @@ int beargit_rm(const char* filename) {
  *
  */
 
-const char* go_bears = "GO BEARS!";
+const char *go_bears = "GO BEARS!";
 
-int is_commit_msg_ok(const char* msg) {
-  /* COMPLETE THE REST */
-  //包含"GO BEARS!"子串 , 两个字符串指针 p1,p2 移动
-  char gb[] = "GO BEARS!";
-  int p1=0;
-  int matchP1 = strlen(gb);
-  while (*msg!="\0") {
-    if (*msg == gb[p1]) {
-      if (p1==matchP1) {
+int is_commit_msg_ok(const char *msg) {
+    /* COMPLETE THE REST */
+    //包含"GO BEARS!"子串 , 两个字符串指针 p1,p2 移动
+    char gb[] = "GO BEARS!";
+    int p1 = 0;
+    int matchP1 = strlen(gb);
+    while (*msg != "\0") {
+        if (*msg == gb[p1]) {
+            if (p1 == matchP1) {
+                return 1;
+            }
+            p1++;
+
+        } else if (p1 != 0) {
+            p1 = 0;
+        }
+
+        msg++;
+    }
+    return 0;
+}
+
+const char *digits = "61c";
+
+void next_commit_id(char *commit_id) {
+    /* COMPLETE THE REST */
+
+    char currentBranch[BRANCHNAME_SIZE];
+    read_string_from_file(".beargit/.current_branch", currentBranch, BRANCHNAME_SIZE);
+
+    //6 1 c 的三进制转换
+    //0 1 2 映射
+    //只填了前10个 , branch相关
+    int n = get_branch_number(currentBranch);
+    for (int i = 0; i < COMMIT_ID_BRANCH_BYTES; i++) {
+        // n%3 , 得到第i位的值
+        commit_id[i] = digits[n % 3];
+        // n/=3 , 左移,去掉第i位
+        n /= 3;
+    }
+
+    //填剩余的30个
+    next_commit_id_part1(commit_id + COMMIT_ID_BRANCH_BYTES);
+
+
+}
+
+void next_commit_id_part1(char *commit_id) {
+    /* COMPLETE THE REST */
+    //todo;这是在干嘛 , 就不能也用进制的写法
+    char *new_id = commit_id;
+    //当指针没有到尾部
+    while (*new_id != '\0') {
+        //如果是0 , 都填上6 , 然后下一次循环 00000000 -> 6666666666
+        if (*new_id == '0') {
+            *new_id = '6';
+            new_id++;
+            continue;
+            // 6 1 c
+            // 0 1 2
+            //如果是6了,加一,变成1
+        } else if (*new_id == '6') {
+            *new_id = '1';
+            break;
+            //如果是1了,加一,变成c
+        } else if (*new_id == '1') {
+            *new_id = 'c';
+            break;
+            //如果是c了,进位,原位变为6
+        } else if (*new_id == 'c') {
+            *new_id = '6';
+            new_id++;
+            //似乎和第一个if一样
+        } else {
+            *new_id = '6';
+            new_id++;
+        }
+    }
+}
+
+
+int beargit_commit(const char *msg) {
+    if (!is_commit_msg_ok(msg)) {
+        fprintf(stderr, "ERROR: Message must contain \"%s\"\n", go_bears);
         return 1;
-      }
-      p1++;
-
-    } else if (p1!=0)
-    {
-      p1=0;
     }
-  
-    msg++;
-  }
-  return 0;
-}
 
-const char* digits="61c";
+    char commit_id[COMMIT_ID_SIZE];
+    read_string_from_file(".beargit/.prev", commit_id, COMMIT_ID_SIZE);
+    next_commit_id(commit_id);
 
-void next_commit_id(char* commit_id) {
-  /* COMPLETE THE REST */
-  
-  char currentBranch[BRANCHNAME_SIZE];
-  read_string_from_file(".beargit/.current_branch",currentBranch,BRANCHNAME_SIZE);
+    /* COMPLETE THE REST */
+    //创建本次commit的目录
+    char *filename = malloc(strlen(".beargit/") + strlen(commit_id) + 1);
+    sprintf(filename, "%s/%s", ".beargit", commit_id);
+    fs_mkdir(filename);
+    //创建本次的.index文件
+    char *index = malloc(strelen(filename) + strlen("/.index") + 1);
+    sprintf(index, "%s/%s", filename, "/.index");
+    //拷贝.prev
+    fs_cp(".beargit/.prev", prev);
 
-  //6 1 c 的三进制转换
-  //0 1 2 映射
-  //只填了前10个 , branch相关
-  int n = get_branch_number(currentBranch);
-  for (int i=0;i<COMMIT_ID_BRANCH_BYTES;i++) {
-    // n%3 , 得到第i位的值
-    commit_id[i] = digits[n%3];
-    // n/=3 , 左移,去掉第i位
-    n/=3;
-  }
-
-  //填剩余的30个
-  next_commit_id_part1(commit_id+COMMIT_ID_BRANCH_BYTES);
-
-  
-
-}
-
-void next_commit_id_part1(char* commit_id) {
-  /* COMPLETE THE REST */
-  //todo;这是在干嘛 , 就不能也用进制的写法
-  char* new_id = commit_id;
-  //当指针没有到尾部
-  while (*new_id != '\0') {
-    //如果是0 , 都填上6 , 然后下一次循环 00000000 -> 6666666666
-    if (*new_id == '0') {
-      *new_id = '6';
-      new_id++;
-      continue;
-      // 6 1 c
-      // 0 1 2
-      //如果是6了,加一,变成1
-    } else if (*new_id == '6') {
-      *new_id = '1';
-      break;
-      //如果是1了,加一,变成c
-    } else if (*new_id == '1') {
-      *new_id = 'c';
-      break;
-      //如果是c了,进位,原位变为6
-    } else if (*new_id == 'c') {
-      *new_id = '6';
-      new_id++;
-      //似乎和第一个if一样
-    } else {
-      *new_id = '6';
-      new_id++;
+    //拷贝所有本次.index里的一份文件
+    FILE *filelist = fopen(".beargit/.index", "r");
+    char file[FILENAME_SIZE];
+    while (fgets(file, sizeof(file), filelist)) {
+        strtok(file, "\n");
+        char *new_file = malloc(strlen(filename) + strlen(file) + 1);
+        sprintf(new_file, "%s/%s", filename, file);
+        fs_cp(file, new_file);
     }
-  }
-}
 
 
+    //创建并写入.msg
+    char *commit_msg = malloc(strlen(filename) + strlen("/.msg") + 1);
+    sprintf(commit_msg, "%s%s", "/.msg");
+    write_string_to_file(commit_msg, msg);
+    write_string_to_file(".beargit/.prev", commit_id);
+    fclose(filelist);
 
-int beargit_commit(const char* msg) {
-  if (!is_commit_msg_ok(msg)) {
-    fprintf(stderr, "ERROR: Message must contain \"%s\"\n", go_bears);
-    return 1;
-  }
-
-  char commit_id[COMMIT_ID_SIZE];
-  read_string_from_file(".beargit/.prev", commit_id, COMMIT_ID_SIZE);
-  next_commit_id(commit_id);
-
-  /* COMPLETE THE REST */
-  //创建本次commit的目录
-  char *filename=malloc(strlen(".beargit/") + strlen(commit_id)+1);
-  sprintf(filename,"%s/%s",".beargit",commit_id);
-  fs_mkdir(filename);
-  //创建本次的.index文件
-  char *index=malloc(strelen(filename)+strlen("/.index")+1);
-  sprintf(index,"%s/%s",filename,"/.index");
-  //拷贝.prev
-  fs_cp(".beargit/.prev",prev);
-  
-  //拷贝所有本次.index里的一份文件
-  FILE *filelist=fopen(".beargit/.index","r");
-  char file[FILENAME_SIZE];
-  while (fgets(file,sizeof(file),filelist)) {
-    strtok(file,"\n");
-    char *new_file=malloc(strlen(filename)+strlen(file)+1);
-    sprintf(new_file,"%s/%s",filename,file);
-    fs_cp(file,new_file);
-  }
-  
-
-  //创建并写入.msg
-char *commit_msg = malloc(strlen(filename)+strlen("/.msg")+1);
-sprintf(commit_msg,"%s%s","/.msg");
-write_string_to_file(commit_msg,msg);
-write_string_to_file(".beargit/.prev",commit_id);
-fclose(filelist);
-
-  //结束
-  return 0;
+    //结束
+    return 0;
 }
 
 /* beargit status
@@ -265,18 +262,18 @@ fclose(filelist);
  */
 
 int beargit_status() {
-  /* COMPLETE THE REST */
+    /* COMPLETE THE REST */
 
-  //输出到标准输出流 :"Tracked files:"
-  fprintf(stdout,"%s\n\n","Tracked files:");
+    //输出到标准输出流 :"Tracked files:"
+    fprintf(stdout, "%s\n\n", "Tracked files:");
 
 
-  //读取.beargit 目录的.index , 一行一行输出文件名 , 并保持文件计数
-  int fileNums=0;
-  //打开文件,得到文件descriptor(在进程的文件描述符表创建一条文件名->inode(文件位置?)的 kv 映射)
-  FILE* fd=fopen(".beargit/.index","r");
-  //循环读取文件直到结束
-  char fileName[FILENAME_SIZE];
+    //读取.beargit 目录的.index , 一行一行输出文件名 , 并保持文件计数
+    int fileNums = 0;
+    //打开文件,得到文件descriptor(在进程的文件描述符表创建一条文件名->inode(文件位置?)的 kv 映射)
+    FILE *fd = fopen(".beargit/.index", "r");
+    //循环读取文件直到结束
+    char fileName[FILENAME_SIZE];
     //fgets 每次读取数据流中的一行,
     // 当读取 (n-1) 个字符时，或者读取到换行符时，或者到达文件末尾时，它会停止
     //https://baike.baidu.com/item/fgets
@@ -286,24 +283,24 @@ int beargit_status() {
     //在读字符时遇到end-of-file，则eof指示器被设置，如果还没读入任何字符就遇到这种情况，则stream保持原来的内容，返回NULL；
     //如果发生读入错误，error指示器被设置，返回NULL，stream的值可能被改变。
     //char *fgets(char *str, int n, FILE *stream);
-  while (fgets(fileName,sizeof(fileName),fd)) {
-      strtok(fileName,"\n"); //去除读取到的"\n"
-      fprintf(stdout,"%s",fileName);
-      fileNums++;
-  }
+    while (fgets(fileName, sizeof(fileName), fd)) {
+        strtok(fileName, "\n"); //去除读取到的"\n"
+        fprintf(stdout, "%s", fileName);
+        fileNums++;
+    }
 
 
-  //输出"<N> files total"
-  fprintf(stdout,"%d %s\n\n",fileNums,"files total");
+    //输出"<N> files total"
+    fprintf(stdout, "%d %s\n\n", fileNums, "files total");
 
-  //忘记关闭文件了..百密总有一疏 , 墨菲定律..
-  // 肉眼检查,伪代码都不可靠,测试也可能测不出来...
-  // 想齐全 case 多自测吧 ,
-  // 做 lab 的时候都是靠的 test 套件齐全,做算法题也是
-  // 想起那个数学 类比拼图的说法 ,
-  // 没人会从中间开始拼,都是从外到里一点一点积累,积累的足够多了就能接触到更里层的拼块了
-  fclose(fd);
-  return 0;
+    //忘记关闭文件了..百密总有一疏 , 墨菲定律..
+    // 肉眼检查,伪代码都不可靠,测试也可能测不出来...
+    // 想齐全 case 多自测吧 ,
+    // 做 lab 的时候都是靠的 test 套件齐全,做算法题也是
+    // 想起那个数学 类比拼图的说法 ,
+    // 没人会从中间开始拼,都是从外到里一点一点积累,积累的足够多了就能接触到更里层的拼块了
+    fclose(fd);
+    return 0;
 }
 
 /* beargit log
@@ -313,127 +310,127 @@ int beargit_status() {
  */
 
 int beargit_log() {
-  /* COMPLETE THE REST */
+    /* COMPLETE THE REST */
 
-  //从根目录的 .prev记录的commit_id开始 , 直到commit_id==0000000000000000000 , 或者达到上限
-  //计数
-  int counter=INT_MAX;
-  
-  char *prev = malloc(COMMIT_ID_BYTES);
-  read_string_from_file(".beargit/.prev",prev,COMMIT_ID_SIZE);
-  if (strcmp("0000000000000000000000000000000000000000",prev)==0) {
-    fprintf(stderr,"ERROR: There are no commits!\n");
-    return 1;
-  }
-  while (counter>0) {
-    if (strcmp("0000000000000000000000000000000000000000"),prev)==0) {
-      break;
+    //从根目录的 .prev记录的commit_id开始 , 直到commit_id==0000000000000000000 , 或者达到上限
+    //计数
+    int counter = INT_MAX;
+
+    char *prev = malloc(COMMIT_ID_BYTES);
+    read_string_from_file(".beargit/.prev", prev, COMMIT_ID_SIZE);
+    if (strcmp("0000000000000000000000000000000000000000", prev) == 0) {
+        fprintf(stderr, "ERROR: There are no commits!\n");
+        return 1;
     }
+    while (counter > 0) {
+        if (strcmp("0000000000000000000000000000000000000000"), prev)==0) {
+            break;
+        }
 
-    //遍历所有commit目录的.msg , 全是字符串,malloc和文件操作...封装一下啊
-    char *prev_message = malloc(MSG_SIZE + 1);
-    char *prev_dir = malloc(strlen(".beargit/") + strlen(prev_commit_id) + strlen("/.msg") + 1);
-    sprintf(prev_dir, "%s/%s/%s", ".beargit", prev_commit_id, ".msg");
-    read_string_from_file(prev_dir, prev_message, MSG_SIZE);
-    fprintf(stdout, "    %s\n", prev_message);
-    char *prev_directory = malloc(strlen(".beargit/") + strlen(prev_commit_id) + strlen("/.prev") + 1);
-    sprintf(prev_directory, "%s/%s/%s", ".beargit", prev_commit_id, ".prev");
-    read_string_from_file(prev_directory, prev_commit_id, COMMIT_ID_SIZE);
-    counter--;
-  }
-  fprintf(stdout,"\n");
-  return 0;
+        //遍历所有commit目录的.msg , 全是字符串,malloc和文件操作...封装一下啊
+        char *prev_message = malloc(MSG_SIZE + 1);
+        char *prev_dir = malloc(strlen(".beargit/") + strlen(prev_commit_id) + strlen("/.msg") + 1);
+        sprintf(prev_dir, "%s/%s/%s", ".beargit", prev_commit_id, ".msg");
+        read_string_from_file(prev_dir, prev_message, MSG_SIZE);
+        fprintf(stdout, "    %s\n", prev_message);
+        char *prev_directory = malloc(strlen(".beargit/") + strlen(prev_commit_id) + strlen("/.prev") + 1);
+        sprintf(prev_directory, "%s/%s/%s", ".beargit", prev_commit_id, ".prev");
+        read_string_from_file(prev_directory, prev_commit_id, COMMIT_ID_SIZE);
+        counter--;
+    }
+    fprintf(stdout, "\n");
+    return 0;
 }
 
 int beargit_branch() {
-  /* COMPLETE THE REST */
+    /* COMPLETE THE REST */
 
-  //打印所有branch名字
-  FILE* branches = fopen(".beargit/.branches", "r");
-  char branch_name[BRANCHNAME_SIZE];
-  char *current_branch = malloc(BRANCHNAME_SIZE + 1);
-  read_string_from_file(".beargit/.current_branch", current_branch, BRANCHNAME_SIZE);
-  while (fgets(branch_name, sizeof(branch_name), branches)) {
-    strtok(branch_name, "\n");
-    if (strcmp(current_branch, branch_name) == 0) {
-      fprintf(stdout, "* ");
-    } else {
-      fprintf(stdout, "  ");
+    //打印所有branch名字
+    FILE *branches = fopen(".beargit/.branches", "r");
+    char branch_name[BRANCHNAME_SIZE];
+    char *current_branch = malloc(BRANCHNAME_SIZE + 1);
+    read_string_from_file(".beargit/.current_branch", current_branch, BRANCHNAME_SIZE);
+    while (fgets(branch_name, sizeof(branch_name), branches)) {
+        strtok(branch_name, "\n");
+        if (strcmp(current_branch, branch_name) == 0) {
+            fprintf(stdout, "* ");
+        } else {
+            fprintf(stdout, "  ");
+        }
+        fprintf(stdout, "%s\n", branch_name);
     }
-    fprintf(stdout, "%s\n", branch_name);
-  }
-  fclose(branches);
-  return 0;
+    fclose(branches);
+    return 0;
 }
 
-int beargit_checkout(const char *arg,int new_branch) {
-  /*
-  - checkout的是commit_id
-  - checkout的是branch
-  - checkout新分支
-  */
+int beargit_checkout(const char *arg, int new_branch) {
+    /*
+    - checkout的是commit_id
+    - checkout的是branch
+    - checkout新分支
+    */
 
 //获取当前分支名
- char current_branch[BRANCHNAME_SIZE];
-  read_string_from_file(".beargit/.current_branch", current_branch, BRANCHNAME_SIZE);
+    char current_branch[BRANCHNAME_SIZE];
+    read_string_from_file(".beargit/.current_branch", current_branch, BRANCHNAME_SIZE);
 
 //如果当前分支名长度不为0 (意味着不是detached的) , 那把当前的.prev拷贝到当前分支的目录里  (之后切回来的时候用到)
 
-if (strlen(current_branch)) {
-    char current_branch_file[BRANCHNAME_SIZE + 100];
-    sprintf(current_branch_file, ".beargit/.branch_%s", current_branch);
-    fs_cp(".beargit/.prev", current_branch_file);
-  }
-
-//如果是commit_id (detached的) , 检查commit_id目录是否存在 , 把current_branch设为none
-  if (is_it_a_commit_id(arg)) {
-    char commit_dir[FILENAME_SIZE + 100] = ".beargit/";
-    strcat(commit_dir, arg);
-    if (!fs_check_dir_exists(commit_dir)) {
-      fprintf(stderr, "ERROR: Commit %s does not exist\n", arg);
-      return 1;
+    if (strlen(current_branch)) {
+        char current_branch_file[BRANCHNAME_SIZE + 100];
+        sprintf(current_branch_file, ".beargit/.branch_%s", current_branch);
+        fs_cp(".beargit/.prev", current_branch_file);
     }
 
-    // Set the current branch to none (i.e., detached).
-    write_string_to_file(".beargit/.current_branch", "");
+//如果是commit_id (detached的) , 检查commit_id目录是否存在 , 把current_branch设为none
+    if (is_it_a_commit_id(arg)) {
+        char commit_dir[FILENAME_SIZE + 100] = ".beargit/";
+        strcat(commit_dir, arg);
+        if (!fs_check_dir_exists(commit_dir)) {
+            fprintf(stderr, "ERROR: Commit %s does not exist\n", arg);
+            return 1;
+        }
 
-    
-    return checkout_commit(arg);
-  }
-
-  //todo;
-  const char *branch_name = arg;
-
-  int branch_exists = (get_branch_number(branch_name)>=0);
-
-  if (branch_exists && new_branch) {
-    fprintf(stderr, "ERROR: A branch named %s already exists\n", branch_name);
-    return 1;
-  }
-
-  if (!branch_exists && !new_branch) {
- fprintf(stderr, "ERROR: No branch %s exists\n", branch_name);
-    return 1;
-  }
+        // Set the current branch to none (i.e., detached).
+        write_string_to_file(".beargit/.current_branch", "");
 
 
-  char branch_file[FILENAME_SIZE] = ".beargit/.branch_"; 
-  strcat(branch_file, branch_name);
+        return checkout_commit(arg);
+    }
 
-  // 新分支 , 创建相关文件
-  if (new_branch) {
-    FILE* fbranches = fopen(".beargit/.branches", "a");
-    fprintf(fbranches, "%s\n", branch_name);
-    fclose(fbranches);
-    fs_cp(".beargit/.prev", branch_file); 
-  }
+    //todo;
+    const char *branch_name = arg;
 
-  write_string_to_file(".beargit/.current_branch", branch_name);
+    int branch_exists = (get_branch_number(branch_name) >= 0);
 
-  // Read the head commit ID of this branch.
-  char branch_head_commit_id[COMMIT_ID_SIZE];
-  read_string_from_file(branch_file, branch_head_commit_id, COMMIT_ID_SIZE);
+    if (branch_exists && new_branch) {
+        fprintf(stderr, "ERROR: A branch named %s already exists\n", branch_name);
+        return 1;
+    }
+
+    if (!branch_exists && !new_branch) {
+        fprintf(stderr, "ERROR: No branch %s exists\n", branch_name);
+        return 1;
+    }
 
 
-  return checkout_commit(branch_head_commit_id);
+    char branch_file[FILENAME_SIZE] = ".beargit/.branch_";
+    strcat(branch_file, branch_name);
+
+    // 新分支 , 创建相关文件
+    if (new_branch) {
+        FILE *fbranches = fopen(".beargit/.branches", "a");
+        fprintf(fbranches, "%s\n", branch_name);
+        fclose(fbranches);
+        fs_cp(".beargit/.prev", branch_file);
+    }
+
+    write_string_to_file(".beargit/.current_branch", branch_name);
+
+    // Read the head commit ID of this branch.
+    char branch_head_commit_id[COMMIT_ID_SIZE];
+    read_string_from_file(branch_file, branch_head_commit_id, COMMIT_ID_SIZE);
+
+
+    return checkout_commit(branch_head_commit_id);
 }
