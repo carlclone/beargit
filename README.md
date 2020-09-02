@@ -61,6 +61,16 @@
 
 利用之前 15213 的 docker镜像,配合 clion 的 tool chain + makelist.txt 代码提示
 
+# gdb / cgdb
+
+- 材料 [ucore gdb](https://chyyuu.gitbooks.io/ucore_os_docs/content/lab0/lab0_2_3_3_gdb.html)
+- 材料 [cs61c cgdb](https://inst.eecs.berkeley.edu/~cs61c/sp15/labs/01/)
+- 材料 [cs61a]()
+- 编译时需要gcc -g (-ggdb) 
+- gdb progname
+
+
+
 # 测试方式
 
 - 编译后自测
