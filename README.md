@@ -4,6 +4,7 @@
 # todo
 - [x] test method
 - [ ] gdb/cgdb
+- [ ] clion breakpoint debug
 - [x] status
 - [x] rm
 - [x] commit
