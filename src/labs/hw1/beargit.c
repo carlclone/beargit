@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <zconf.h>
+#include <stdbool.h>
 
 #include "beargit.h"
 #include "util.h"
@@ -180,18 +181,17 @@ void next_commit_id(char *commit_id) {
 }
 
 
-
 int get_branch_number(const char *branch_name) {
-    FILE*  branches_fd =  fopen(".beargit/.branches","r");
+    FILE *branches_fd = fopen(".beargit/.branches", "r");
 
-    int branch_index=-1;
-    int count=0;
+    int branch_index = -1;
+    int count = 0;
     char line[BRANCHNAME_SIZE];
 
-    while(fgets(line,sizeof(line),branches_fd)) {
-        strtok(line,"\n");
-        if(strcmp(line,branch_name)==0) {
-            branch_index=count;
+    while (fgets(line, sizeof(line), branches_fd)) {
+        strtok(line, "\n");
+        if (strcmp(line, branch_name) == 0) {
+            branch_index = count;
             break;
         }
         count++;
@@ -251,9 +251,10 @@ int beargit_commit(const char *msg) {
     sprintf(filename, "%s/%s", ".beargit", commit_id);
     fs_mkdir(filename);
     //创建本次的.index文件
-    char *index = malloc(strelen(filename) + strlen("/.index") + 1);
+    char *index = malloc(strlen(filename) + strlen("/.index") + 1);
     sprintf(index, "%s/%s", filename, "/.index");
     //拷贝.prev
+    char *prev = malloc(strlen(filename + strlen(".prev")) + 1);
     fs_cp(".beargit/.prev", prev);
 
     //拷贝所有本次.index里的一份文件
@@ -340,15 +341,15 @@ int beargit_log() {
     int counter = INT_MAX;
 
     char *prev = malloc(COMMIT_ID_BYTES);
-    char* prev_commit_id = malloc(COMMIT_ID_SIZE+1);
-    char* prev_message = malloc(MSG_SIZE+1);
+    char *prev_commit_id = malloc(COMMIT_ID_SIZE + 1);
+    char *prev_message = malloc(MSG_SIZE + 1);
     read_string_from_file(".beargit/.prev", prev, COMMIT_ID_SIZE);
     if (strcmp("0000000000000000000000000000000000000000", prev) == 0) {
         fprintf(stderr, "ERROR: There are no commits!\n");
         return 1;
     }
     while (counter > 0) {
-        if (strcmp("0000000000000000000000000000000000000000", prev)==0) {
+        if (strcmp("0000000000000000000000000000000000000000", prev) == 0) {
             break;
         }
 
@@ -460,12 +461,27 @@ int beargit_checkout(const char *arg, int new_branch) {
     return checkout_commit(branch_head_commit_id);
 }
 
+bool fs_check_dir_exists(char *dir) {
+    return 0;
+}
+
+
+int is_it_a_commit_id(const char* commit_id) {
+    if (strlen(commit_id)!=COMMIT_ID_SIZE) {
+        return 0;
+    }
+
+    while (commit_id!="\0") {
+
+        commit_id++;
+    }
+}
 
 
 int checkout_commit(const char *commit_id) {
 
-    FILE* index_fd = fopen(".beargit/.index", "r");
-    char* file_name = malloc(FILENAME_SIZE + 1);
+    FILE *index_fd = fopen(".beargit/.index", "r");
+    char *file_name = malloc(FILENAME_SIZE + 1);
     while (fgets(file_name, sizeof(file_name), index_fd)) {
         strtok(file_name, "\n");
         fs_rm(file_name);
@@ -476,9 +492,9 @@ int checkout_commit(const char *commit_id) {
         write_string_to_file(".beargit/.index", "\0");
     } else {
         //为其他 , 删除当前tracked , cp新版本tracked files , 更新.index , 更新.prev
-        FILE* new_index_fd = fopen(".beargit/.index", "r");
+        FILE *new_index_fd = fopen(".beargit/.index", "r");
 
-        char* new_file_name = malloc(FILENAME_SIZE + 1);
+        char *new_file_name = malloc(FILENAME_SIZE + 1);
         //cp .index
         char *checked_index = malloc(strlen(strlen(".beargit/")) + strlen(commit_id) + strlen("/.index") + 1);
         sprintf(checked_index, "%s/%s/%s", ".beargit", commit_id, ".index");
