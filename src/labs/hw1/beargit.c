@@ -3,6 +3,7 @@
 
 #include <unistd.h>
 #include <sys/stat.h>
+#include <zconf.h>
 
 #include "beargit.h"
 #include "util.h"
@@ -178,6 +179,28 @@ void next_commit_id(char *commit_id) {
 
 }
 
+
+
+int get_branch_number(const char *branch_name) {
+    FILE*  branches_fd =  fopen(".beargit/.branches","r");
+
+    int branch_index=-1;
+    int count=0;
+    char line[BRANCHNAME_SIZE];
+
+    while(fgets(line,sizeof(line),branches_fd)) {
+        strtok(line,"\n");
+        if(strcmp(line,branch_name)==0) {
+            branch_index=count;
+            break;
+        }
+        count++;
+    }
+    fclose(branches_fd);
+    return branch_index;
+}
+
+
 void next_commit_id_part1(char *commit_id) {
     /* COMPLETE THE REST */
     //todo;这是在干嘛 , 就不能也用进制的写法
@@ -317,13 +340,15 @@ int beargit_log() {
     int counter = INT_MAX;
 
     char *prev = malloc(COMMIT_ID_BYTES);
+    char* prev_commit_id = malloc(COMMIT_ID_SIZE+1);
+    char* prev_message = malloc(MSG_SIZE+1);
     read_string_from_file(".beargit/.prev", prev, COMMIT_ID_SIZE);
     if (strcmp("0000000000000000000000000000000000000000", prev) == 0) {
         fprintf(stderr, "ERROR: There are no commits!\n");
         return 1;
     }
     while (counter > 0) {
-        if (strcmp("0000000000000000000000000000000000000000"), prev)==0) {
+        if (strcmp("0000000000000000000000000000000000000000", prev)==0) {
             break;
         }
 
@@ -435,10 +460,12 @@ int beargit_checkout(const char *arg, int new_branch) {
     return checkout_commit(branch_head_commit_id);
 }
 
+
+
 int checkout_commit(const char *commit_id) {
 
-    index_fd = fopen(".beargit/.index", "r");
-    file_name = malloc(FILENAME_SIZE + 1);
+    FILE* index_fd = fopen(".beargit/.index", "r");
+    char* file_name = malloc(FILENAME_SIZE + 1);
     while (fgets(file_name, sizeof(file_name), index_fd)) {
         strtok(file_name, "\n");
         fs_rm(file_name);
@@ -449,11 +476,11 @@ int checkout_commit(const char *commit_id) {
         write_string_to_file(".beargit/.index", "\0");
     } else {
         //为其他 , 删除当前tracked , cp新版本tracked files , 更新.index , 更新.prev
-        new_index_fd = fopen(".beargit/.index", "r");
+        FILE* new_index_fd = fopen(".beargit/.index", "r");
 
-        new_file_name = malloc(FILENAME_SIZE + 1);
+        char* new_file_name = malloc(FILENAME_SIZE + 1);
         //cp .index
-        char *checked_index = malloc(strlen(strlen(".beargit/")) + strelen(commit_id) + strlen("/.index") + 1)
+        char *checked_index = malloc(strlen(strlen(".beargit/")) + strlen(commit_id) + strlen("/.index") + 1);
         sprintf(checked_index, "%s/%s/%s", ".beargit", commit_id, ".index");
         fs_cp(checked_index, ".beargit/.index");
 
