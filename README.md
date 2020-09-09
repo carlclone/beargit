@@ -9,10 +9,19 @@
 - [x] rm
 - [x] commit
     - [x] is_commit_msg_ok
-    - [x] commit_id impl
+    - [x] commit_id impl ***** (核心之一 commit_id 的设计)
 - [x] log
 - [x] branch
 - [x] checkout
+
+# commit_id 设计
+- 进制转换
+- 数量估计(系统设计的系统 estimation)
+- tinyurl 服务的unique tinyurl 设计 (key generation service) from educative.io 和 geektime 和其他.... https://discuss.educative.io/t/what-is-kgs-why-2-table/12665/12
+- 刘宇波老师的哈希表课
+- snowflake 算法
+- 增加 branch 功能情况下的 commit_id改造
+- 保证 unique 可以用连续 , 但是 not guessable 要怎么实现?
 
 # 收获
 
